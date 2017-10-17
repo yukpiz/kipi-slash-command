@@ -1,12 +1,44 @@
 # -*- coding: utf-8 -*-
 
 import json
+import urlparse
 
 def lambda_handler(event, context):
     print("-----------------------")
     print(event)
     print("-----------------------")
-    payload = {
-        "text": "hoge!"
-    }
+
+    parameters = parse_token(event["body"])
+    payload = command(parameters)
+
     return { "statusCode": 200, "body": json.dumps(payload) }
+
+def parse_token(token):
+    parsed = urlparse.parse_qs(token)
+    return {
+        "user_id": parsed["user_id"][0],
+        "channel_id": parsed["channel_id"][0],
+        "text": parsed["text"][0],
+        "response_url": parsed["response_url"][0],
+        "team_id": parsed["team_id"][0],
+        "channel_name": parsed["channel_name"][0],
+        "token": parsed["token"][0],
+        "command": parsed["command"][0],
+        "team_domain": parsed["team_domain"][0],
+        "user_name": parsed["user_name"][0],
+    }
+
+def command(parameters):
+    print(parameters)
+    if parameters["command"] == "/emojisan":
+        return command_emojisan(parameters)
+    else:
+        return {
+            "text": "Not supported command: %s" % parameters["command"]
+        }
+
+def command_emojisan(parameters):
+    print(parameters)
+    return {
+        "text": "Emoji Sanです %s" % parameters["text"]
+    }
