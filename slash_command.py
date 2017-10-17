@@ -2,6 +2,8 @@
 
 import json
 import urlparse
+import requests
+from PIL import Image
 
 def lambda_handler(event, context):
     print("-----------------------")
