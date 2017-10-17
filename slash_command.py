@@ -4,6 +4,7 @@ import json
 import urlparse
 import requests
 from PIL import Image
+from StringIO import StringIO
 
 def lambda_handler(event, context):
     print("-----------------------")
@@ -44,3 +45,9 @@ def command_emojisan(parameters):
     return {
         "text": "Emoji Sanです %s" % parameters["text"]
     }
+
+def download_image(url):
+    print(url)
+    response = requests.get(url)
+    image = Image.open(StringIO(response.content))
+    image.thumbnail((128, 128), Image.ANTIALIAS)
