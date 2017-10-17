@@ -10,7 +10,7 @@ test:
   override:
     - echo 'test'
 deployment:
-  master:
+  master-head:
     branch: master
     commands:
       - lamvery deploy
