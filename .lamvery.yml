@@ -1,0 +1,12 @@
+profile: null
+region: ap-northeast-1
+versioning: false
+default_alias: master
+configuration:
+  name: kipi-slash-command
+  runtime: python2.7
+  role: {{ env['AWS_LAMBDA_ROLE'] }}
+  handler: slash_command.lambda_handler
+  description: Kipi Slash Command
+  timeout: 30
+  memory_size: 128
