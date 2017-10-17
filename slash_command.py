@@ -42,6 +42,8 @@ def command(parameters):
 
 def command_emojisan(parameters):
     print(parameters)
+    image = download_image(parameters["text"])
+    image = resize_image(image)
     return {
         "text": "Emoji Sanです %s" % parameters["text"]
     }
@@ -49,5 +51,9 @@ def command_emojisan(parameters):
 def download_image(url):
     print(url)
     response = requests.get(url)
-    image = Image.open(StringIO(response.content))
+    print(response.status_code)
+    return Image.open(StringIO(response.content))
+
+def resize_image(image):
     image.thumbnail((128, 128), Image.ANTIALIAS)
+    return image
