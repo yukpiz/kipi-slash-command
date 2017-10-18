@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import os
 import json
+import upload
 import urlparse
 import requests
+import commands
+import threading
 from PIL import Image
 from StringIO import StringIO
+from os.path import join, dirname
+from dotenv import load_dotenv
+import upload
+
+URL = "https://{team_name}.slack.com/customize/emoji"
 
 def lambda_handler(event, context):
-    print("-----------------------")
-    print(event)
-    print("-----------------------")
-
+    load_dotenv(join(dirname(__file__), ".env"))
     parameters = parse_token(event["body"])
     payload = command(parameters)
 
@@ -32,7 +38,6 @@ def parse_token(token):
     }
 
 def command(parameters):
-    print(parameters)
     if parameters["command"] == "/emojisan":
         return command_emojisan(parameters)
     else:
@@ -41,19 +46,37 @@ def command(parameters):
         }
 
 def command_emojisan(parameters):
-    print(parameters)
     image = download_image(parameters["text"])
     image = resize_image(image)
+    image.save("/tmp/temp.jpg", "JPEG")
+    session = requests.session()
+    session.headers = {"Cookie": os.environ["SLACK_COOKIE"]}
+    session.url = URL.format(team_name=os.environ["SLACK_TEAM"])
+    upload_emoji(session, "hogehoge", "/tmp/temp.jpg")
     return {
-        "text": "Emoji Sanです %s" % parameters["text"]
+        "text": "Emoji Sanです %s" % (parameters["text"])
     }
 
 def download_image(url):
-    print(url)
     response = requests.get(url)
-    print(response.status_code)
     return Image.open(StringIO(response.content))
 
 def resize_image(image):
     image.thumbnail((128, 128), Image.ANTIALIAS)
     return image
+
+def upload_emoji(session, emoji_name, filename):
+    # Fetch the form first, to generate a crumb.
+    r = session.get(session.url)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+    crumb = soup.find("input", attrs={"name": "crumb"})["value"]
+
+    data = {
+        'add': 1,
+        'crumb': crumb,
+        'name': emoji_name,
+        'mode': 'data',
+    }
+    files = {'img': open(filename, 'rb')}
+    session.post(session.url, data=data, files=files, allow_redirects=False)
