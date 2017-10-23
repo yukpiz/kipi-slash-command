@@ -11,10 +11,12 @@ def lambda_handler(event, context):
 
 def parse_token(token):
     parsed = urlparse.parse_qs(token)
+    args = parsed["text"][0].split(" ")
     return {
         "user_id": parsed["user_id"][0],
         "channel_id": parsed["channel_id"][0],
-        "text": parsed["text"][0],
+        "image_url": args[0],
+        "emoji_name": args[1],
         "response_url": parsed["response_url"][0],
         "team_id": parsed["team_id"][0],
         "channel_name": parsed["channel_name"][0],
