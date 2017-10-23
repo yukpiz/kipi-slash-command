@@ -7,6 +7,6 @@ configuration:
   runtime: python2.7
   role: {{ env['AWS_LAMBDA_ROLE'] }}
   handler: slash_command.lambda_handler
-  description: Kipi Slash Command
-  timeout: 30
+  description: Kipi Slash Command.
+  timeout: 10
   memory_size: 128

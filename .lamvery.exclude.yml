@@ -4,4 +4,3 @@
 - ^\.lamvery\.event\.yml$
 - ^\.lamvery\.secret\.yml$
 - ^\.lamvery\.exclude\.yml$
-- ^\.gitignore
